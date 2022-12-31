@@ -1,0 +1,2 @@
+"0","plot(dataWB$Inflation,dataWB$Taux_de_change, pch=20, main='Régression de l`inflation sur le Taux de change',"
+"0","     xlab='Taux de change', ylab='Inflation des prix à la Consommation')"

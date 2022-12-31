@@ -1,0 +1,5 @@
+"0","error_resid <- resid(mod_regression)"
+"0","fit_val <- fitted.values(mod_regression)"
+"0","data_resid <- data.frame(error_resid, fit_val)"
+"0","plot(data_resid$fit_val,data_resid$error_resid, pch=20, main='Analyse des résidus',"
+"0","     xlab='Valeurs estimées', ylab='Erreurs résiduelles')"

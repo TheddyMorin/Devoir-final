@@ -1,0 +1,11 @@
+"0","dataWB <- wbstats::wb_data(indicator=c(""PA.NUS.FCRF"",""TG.VAL.TOTL.GD.ZS"",""NY.GDP.MKTP.KD.ZG"",""FP.CPI.TOTL.ZG"") ,country='HTI', start_date=1980, end_date =2020)"
+"2","Warning: unable to identify current timezone 'H':
+please set environment variable 'TZ'"
+"0","dataWB=dataWB[,c(-1,-2,-3,-4)]"
+"0",""
+"0","names(dataWB)[names(dataWB)==""NY.GDP.MKTP.KD.ZG""]<- ""Croissance_PIB"""
+"0","names(dataWB)[names(dataWB)==""TG.VAL.TOTL.GD.ZS""]<- ""Commerce"""
+"0","names(dataWB)[names(dataWB)==""PA.NUS.FCRF""]<- ""Taux_de_change"""
+"0","names(dataWB)[names(dataWB)==""FP.CPI.TOTL.ZG""]<- ""Inflation"""
+"0","attach(dataWB)"
+"0","dataWB"

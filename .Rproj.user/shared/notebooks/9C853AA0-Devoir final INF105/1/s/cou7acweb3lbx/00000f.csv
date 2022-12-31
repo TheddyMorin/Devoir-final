@@ -1,0 +1,2 @@
+"0","plot(dataWB$Croissance_PIB,dataWB$Taux_de_change, pch=20, main='Régression de la croissance sur le PIB',"
+"0","     xlab='Taux de change', ylab='Croissance du PIB')"

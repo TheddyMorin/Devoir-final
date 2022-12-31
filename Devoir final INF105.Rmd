@@ -1,0 +1,126 @@
+---
+title: "Devoir final INF105"
+author: "GROUP C"
+date: "2022-12-28"
+output: word_document
+---
+
+
+# Choix des variables et explications
+Le taux de change pourrait se définir comme étant le prix d’une devise par rapport à une autre. Il revêt d’une telle importance dans l’économie d’un pays en assurant son commerce extérieur qu’il convient de comprendre les grandeurs qui l’influencent. La monnaie étant une marchandise, comme tout autre ,son prix est déterminé à travers la loi de l’offre et de la demande. Ainsi, si l’offre est supérieur à la demande son prix baisse et inversement son prix augmente, on parle alors de rareté. De ce fait pour étudier le taux de change, il convient de retenir comme variables explicatives les principaux éléments agissant sur la circulation d’une monnaie  dans l’économie d’un pays, à savoir : le commerce de marchandises, la croissance du PIB , ainsi que l’inflation des prix à la consommation.
+
+Avec la conjoncture actuelle du pays marquée par un taux de change galopant, il est important que notre étude soit portée sur le taux de change.
+
+
+# Identification des codes des indicateurs
+Pour ce faire utilisons l'outil search du package wbstats:
+
+```{r search}
+croiss_eco <- wbstats::wb_search("GDP") 
+#  NY.GDP.MKTP.KD.ZG <-- Croissance du PIB
+
+tauxdechange<-wbstats::wb_search("official exchange rate")
+#  PA.NUS.FCRF <-- Taux de Change
+
+commerce_int <- wbstats::wb_search("Merchandise trade")
+#  TG.VAL.TOTL.GD.ZS <-- Commerce de Marchandises
+
+Ipc<-wbstats::wb_search("inflation") 
+#  FP.CPI.TOTL.ZG <-- Inflation des prix à la consommation
+```
+
+
+
+# Importation des données
+Maintenant importons les données à partir des indicateurs sélectionnés
+
+```{r data}
+dataWB <- wbstats::wb_data(indicator=c("PA.NUS.FCRF","TG.VAL.TOTL.GD.ZS","NY.GDP.MKTP.KD.ZG","FP.CPI.TOTL.ZG") ,country='HTI', start_date=1980, end_date =2020)
+dataWB=dataWB[,c(-1,-2,-3,-4)]
+
+names(dataWB)[names(dataWB)=="NY.GDP.MKTP.KD.ZG"]<- "Croissance_PIB"
+names(dataWB)[names(dataWB)=="TG.VAL.TOTL.GD.ZS"]<- "Commerce"
+names(dataWB)[names(dataWB)=="PA.NUS.FCRF"]<- "Taux_de_change"
+names(dataWB)[names(dataWB)=="FP.CPI.TOTL.ZG"]<- "Inflation"
+attach(dataWB)
+dataWB
+```
+
+
+
+# Représentation grapique
+### Visualisation graphique de la régression de l'inflation des prix à la consommation sur le Taux de change
+
+```{r graph1}
+plot(dataWB$Inflation,dataWB$Taux_de_change, pch=20, main='Régression de l`inflation sur le Taux de change',
+     xlab='Taux de change', ylab='Inflation des prix à la Consommation')
+abline(lm(Taux_de_change ~ Inflation, data=dataWB), col='red', lwd=2)
+```
+
+
+### Visualisation graphique de la régression du Commerce de Marchandises sur le Taux de change
+
+```{r graph2}
+plot(dataWB$Commerce,dataWB$Taux_de_change, pch=20, main='Régression du Commerce sur le Taux de change',
+     xlab='Taux de change', ylab='Commerce de Marchandises')
+abline(lm(Taux_de_change ~ Commerce, data=dataWB), col='red', lwd=2)
+```
+
+
+### Visualisation graphique de la régression de la croissance du PIB sur le Taux de change
+
+```{r graph3}
+plot(dataWB$Croissance_PIB,dataWB$Taux_de_change, pch=20, main='Régression de la croissance sur le PIB',
+     xlab='Taux de change', ylab='Croissance du PIB')
+abline(lm(Taux_de_change ~ Croissance_PIB, data=dataWB), col='red', lwd=2)
+```
+
+
+
+
+# Résultats de la régression linéaire
+Dans le tableau suivant se trouve les resultats de la régression de l'inflation des prix à la consommation, du Commerce de Marchandises et de la Croissance du PIB sur le Taux de Change: 
+
+```{r regress}
+mod_regression <- lm(Taux_de_change ~ Inflation + Commerce + Croissance_PIB, data = dataWB)
+Stat_1 <- data.frame(summary(mod_regression)$coefficients[,c(1,4)])
+R.Squared <- summary(mod_regression)$r.squared
+adj.Rsquared <- summary(mod_regression)$adj.r.squared
+f_stat <- summary(mod_regression)$fstatistic[1]
+lmp <- function (modelobject) {
+    if (class(modelobject) != "lm") stop("Not an object of class 'lm' ")
+    f <- summary(modelobject)$fstatistic
+    p <- pf(f[1],f[2],f[3],lower.tail=F)
+    attributes(p) <- NULL
+    return(p)
+}
+p_value <- lmp(mod_regression)
+Stat_description <- c("R_carré","R2.ajusté","Stat_Fisher","P_Value")
+Stats <- c(R.Squared,adj.Rsquared,f_stat,p_value)
+Stat_2 <- data.frame(Stat_description,Stats)
+tab <- data.frame(Stat_1,Stat_2) 
+tab
+```
+
+
+
+
+# Analyse graphique des erreurs
+Le graphique qui suit met en lien les valeurs résiduelles de la régression et les valeurs estimées
+
+```{r graph4}
+error_resid <- resid(mod_regression)
+fit_val <- fitted.values(mod_regression)
+data_resid <- data.frame(error_resid, fit_val)
+plot(data_resid$fit_val,data_resid$error_resid, pch=20, main='Analyse des résidus',
+     xlab='Valeurs estimées', ylab='Erreurs résiduelles')
+abline(lm(error_resid ~ fit_val), col='red', lwd=2)
+```
+
+
+
+
+## Commentaire
+En analysant le graphique ci-dessus mettant en relation les valeurs estimées et les erreurs résiduelles de la régression, on relève deux types d’erreurs d’estimation du modèle. Dans le premier cas il s’agit de l’hétéroscédasticité car en examinant de gauche à droite le graphe, on peut constater que les points s’écartent de plus en plus de la ligne rouge autrement dit les résidus (c’est-à-dire l’écart entre les valeurs observées et les valeurs estimées) deviennent plus grands; dans le second cas on peut remarquer un éloignement extrême de deux points par rapport à la ligne rouge, ce qui  nous signale la présence de valeurs abérrantes qui peut-être soit sur une variable d’entrée (points de levier) soit sur une variable de sortie.
+
+

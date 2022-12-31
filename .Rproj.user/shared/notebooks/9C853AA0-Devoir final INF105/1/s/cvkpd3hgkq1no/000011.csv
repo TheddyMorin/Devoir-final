@@ -1,0 +1,1 @@
+"0","abline(lm(Taux_de_change ~ Croissance_PIB, data=dataWB), col='red', lwd=2)"

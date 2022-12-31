@@ -1,0 +1,2 @@
+"0","plot(dataWB$Commerce,dataWB$Taux_de_change, pch=20, main='Régression du Commerce sur le Taux de change',"
+"0","     xlab='Taux de change', ylab='Commerce de Marchandises')"
